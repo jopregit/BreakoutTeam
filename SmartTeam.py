@@ -9,78 +9,76 @@ class SmartTeam:
         self.debug = True
         self.name = name
         self.members = team
-        self.breakoutTeams = None
-        self.breakoutTeamsTrial = None
+        self.breakout_teams = None
+        self.breakout_teams_trial = None
         self.visavis = Visavis(self.members)
-        self.visavisTrial = Visavis
-        self.breakoutTeamsTrial = None
-        self.currentNumberOfTrials = 0
-        self.maxTrials = 100000
+        self.visavis_trial = Visavis
+        self.breakout_teams_trial = None
+        self.current_number_of_trials = 0
+        self.max_trials = 10000
 
-    # heuristic: hope that after enough tries (with randomized order in list of members) ideal groups are found
-    def createNextBreakoutTeams(self, demandedTeamSize):
-        self.breakoutTeams = BreakoutTeams(self.members, demandedTeamSize)
-        self.currentNumberOfTrials = 0
-        while self.currentNumberOfTrials < self.maxTrials:
-            self.currentNumberOfTrials += 1
-            self.initiateNextTrial()
-            self.tryNextBreakoutTeams(demandedTeamSize)
-            if self.visavisTrial.isIdeal():
-                self.breakoutTeams = self.breakoutTeamsTrial
-                self.visavis = self.visavisTrial
-                print("Ideal team found after " + self.currentNumberOfTrials.__str__() + " trials")
+    # heuristic: hope that after enough trials (with randomized order in list of members) ideal groups are found
+    def create_next_breakout_teams(self, demanded_team_size):
+        self.breakout_teams = BreakoutTeams(self.members, demanded_team_size)
+        self.current_number_of_trials = 0
+        while self.current_number_of_trials < self.max_trials:
+            self.current_number_of_trials += 1
+            self.initiate_next_trial()
+            self.try_next_breakout_teams(demanded_team_size)
+            if self.visavis_trial.is_ideal():
+                self.breakout_teams = self.breakout_teams_trial
+                self.visavis = self.visavis_trial
+                print("Ideal team found after " + self.current_number_of_trials.__str__() + " trials")
                 return
-        print("Unfortunately no ideal solution has been found.")
-        self.breakoutTeams = self.breakoutTeamsTrial
-        self.visavis = self.visavisTrial
+        print("Unfortunately no ideal solution has been found after " + self.max_trials.__str__() + " trials")
+        self.breakout_teams = self.breakout_teams_trial
+        self.visavis = self.visavis_trial
 
-    def initiateNextTrial(self):
-        self.breakoutTeamsTrial = copy.deepcopy(self.breakoutTeams)
-        self.visavisTrial = copy.deepcopy(self.visavis)
-        self.breakoutTeamsTrial.randomizeMembers()
+    def initiate_next_trial(self):
+        self.breakout_teams_trial = copy.deepcopy(self.breakout_teams)
+        self.visavis_trial = copy.deepcopy(self.visavis)
+        self.breakout_teams_trial.randomize_members()
 
-    def tryNextBreakoutTeams(self, demandedTeamSize):
-        while not self.breakoutTeamsTrial.allMembersAreAssigned():
-            while not self.breakoutTeamsTrial.currentTeamIsComplete():
-                newMember = self.findBestPartner()
-                self.visavisTrial.increaseVisits(newMember, self.breakoutTeamsTrial.getCurrentTeam())
-                self.breakoutTeamsTrial.addMemberToCurrentTeam(newMember)
-            self.breakoutTeamsTrial.closeCurrentTeam()
-            if len(self.breakoutTeamsTrial.getUnassignedMembers()) < demandedTeamSize * 2:
-                self.buildLastTeam()
+    def try_next_breakout_teams(self, demanded_team_size):
+        while not self.breakout_teams_trial.all_members_are_assigned():
+            while not self.breakout_teams_trial.current_team_is_complete():
+                new_member = self.find_best_partner()
+                self.visavis_trial.increase_visits(new_member, self.breakout_teams_trial.get_current_team())
+                self.breakout_teams_trial.add_member_to_current_team(new_member)
+            self.breakout_teams_trial.close_current_team()
+            if len(self.breakout_teams_trial.get_unassigned_members()) < demanded_team_size * 2:
+                self.build_last_team()
 
-    def buildLastTeam(self):
+    def build_last_team(self):
         for candidate in self.members:
-            if not self.breakoutTeamsTrial.anyTeamContains(candidate):
-                self.visavisTrial.increaseVisits(candidate, self.breakoutTeamsTrial.getCurrentTeam())
-                self.breakoutTeamsTrial.addMemberToCurrentTeam(candidate)
-        self.breakoutTeamsTrial.closeCurrentTeam()
+            if not self.breakout_teams_trial.any_team_contains(candidate):
+                self.visavis_trial.increase_visits(candidate, self.breakout_teams_trial.get_current_team())
+                self.breakout_teams_trial.add_member_to_current_team(candidate)
+        self.breakout_teams_trial.close_current_team()
 
-    def getCurrentBreakoutTeams(self):
-        return self.breakoutTeams.getTeams()
+    def get_current_breakout_teams(self):
+        return self.breakout_teams.get_teams()
 
-    def getCurrentVisavis(self):
-        return self.visavis.visavisMatrix
+    def get_current_visavis(self):
+        return self.visavis.visavis_matrix
 
-    def getName(self):
+    def get_name(self):
         return self.name
-
 
     # best partner is someone who has rarely seen the others who are already in the current team
     #              and who is not yet in any other breakout team
-    def findBestPartner(self):
-        for candidate in self.breakoutTeamsTrial.overallMembers:
-            if not self.breakoutTeamsTrial.anyTeamContains(candidate):
-                if self.isBestPartner(candidate, self.breakoutTeamsTrial.getCurrentTeam()):
-                     return candidate
+    def find_best_partner(self):
+        for candidate in self.breakout_teams_trial.overall_members:
+            if not self.breakout_teams_trial.any_team_contains(candidate):
+                if self.is_best_partner(candidate, self.breakout_teams_trial.get_current_team()):
+                    return candidate
         # no good candidate found, so we just return last one
         return candidate
 
     # 'selten gesehen' heisst: nicht mehr als einmal oefters als die anderen
-    def isBestPartner(self, candidate, team):
-        minimalVisits = self.visavisTrial.getMinimumOfCurrentVisits()
+    def is_best_partner(self, candidate, team):
+        minimal_visits = self.visavis_trial.get_minimum_of_current_visits()
         for member in team:
-            if self.visavisTrial.getVisits(candidate, member) > (minimalVisits + 1):
+            if self.visavis_trial.get_visits(candidate, member) > (minimal_visits + 1):
                 return False
         return True
-

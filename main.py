@@ -1,51 +1,30 @@
 import SmartTeam
 
+
 def run():
+    team = ["Peter", "Luci", "Anna", "Flo", "Yussef", "Rahel", "Paul", "Orwid", "Zachery", "Steve", "Cindy", "Manu"]
 
-    team = []
-    team.append("Peter")
-    team.append("Luci")
-    team.append("Anna")
-    team.append("Flo")
-    team.append("Yussef")
-    team.append("Rahel")
-    team.append("Paul")
-    team.append("Orwid")
-    team.append("Zachery")
-    team.append("Steve")
-    team.append("Cindy")
-    team.append("Manu")
+    smart_team = SmartTeam.SmartTeam("Test Team", team)
 
-    smartTeam = SmartTeam.SmartTeam("Test Team", team)
-
-    smartTeam.createNextBreakoutTeams(3)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(3)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(3)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(2)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(2)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(2)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(2)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
-    smartTeam.createNextBreakoutTeams(2)
-    print(smartTeam.getCurrentBreakoutTeams())
-    print(smartTeam.getCurrentVisavis())
+    smart_team.create_next_breakout_teams(4)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
+    smart_team.create_next_breakout_teams(3)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
+    smart_team.create_next_breakout_teams(3)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
+    smart_team.create_next_breakout_teams(3)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
+    smart_team.create_next_breakout_teams(2)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
+    smart_team.create_next_breakout_teams(2)
+    print(smart_team.get_current_breakout_teams())
+    print(smart_team.get_current_visavis())
 
 
 if __name__ == '__main__':
     run()
-
-
-

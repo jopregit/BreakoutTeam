@@ -1,72 +1,63 @@
 import random
 
+
 class BreakoutTeams:
 
-    def __init__(self, overallMembers, demandedTeamSize):
-        self.demandedTeamSize = demandedTeamSize
-        self.overallMembers = overallMembers
-        self.breakoutTeams = []
-        self.currentTeam = []
+    def __init__(self, overall_members, demanded_team_size):
+        self.demanded_team_size = demanded_team_size
+        self.overall_members = overall_members
+        self.breakout_teams = []
+        self.current_team = []
 
-    def rotateMembers(self, timesToRotate):
+    def randomize_members(self):
         i = 0
-        while i < timesToRotate:
-            first = self.overallMembers[0]
-            self.overallMembers.remove(first)
-            self.overallMembers.append(first)
-            i += 1
+        randomly_ordered_members = []
+        while i < len(self.overall_members):
+            n = random.randint(0, len(self.overall_members) - 1)
+            member = self.overall_members[n]
+            self.overall_members.remove(member)
+            randomly_ordered_members.append(member)
+        self.overall_members = randomly_ordered_members
 
-    def randomizeMembers(self):
-        i = 0
-        randomlyOrderedMembers = []
-        while i < len(self.overallMembers):
-            n = random.randint(0, len(self.overallMembers) - 1)
-            member = self.overallMembers[n]
-            self.overallMembers.remove(member)
-            randomlyOrderedMembers.append(member)
-        self.overallMembers = randomlyOrderedMembers
+    def add_member_to_current_team(self, member):
+        self.current_team.append(member)
 
-
-    def addMemberToCurrentTeam(self, member):
-        self.currentTeam.append(member)
-
-    def anyTeamContains(self, candidate):
-        if candidate in self.currentTeam:
+    def any_team_contains(self, candidate):
+        if candidate in self.current_team:
             return True
-        for team in self.breakoutTeams:
+        for team in self.breakout_teams:
             if candidate in team:
                 return True
         return False
 
-    def getNumberOfTeams(self):
-        return len(self.breakoutTeams)
+    def get_number_of_teams(self):
+        return len(self.breakout_teams)
 
-    def getCurrentTeam(self):
-        return self.currentTeam
+    def get_current_team(self):
+        return self.current_team
 
-    def getTeams(self):
-        return self.breakoutTeams
+    def get_teams(self):
+        return self.breakout_teams
 
-    def closeCurrentTeam(self):
-        self.breakoutTeams.append(self.currentTeam)
-        self.currentTeam = []
+    def close_current_team(self):
+        self.breakout_teams.append(self.current_team)
+        self.current_team = []
 
-    def allMembersAreAssigned(self):
-        if len(self.getUnassignedMembers()) == 0:
+    def all_members_are_assigned(self):
+        if len(self.get_unassigned_members()) == 0:
             return True
         else:
             return False
 
-    def getUnassignedMembers(self):
-        unassignedMembers = []
-        for candidate in self.overallMembers:
-            if not self.anyTeamContains(candidate):
-                unassignedMembers.append(candidate)
-        return unassignedMembers
+    def get_unassigned_members(self):
+        unassigned_members = []
+        for candidate in self.overall_members:
+            if not self.any_team_contains(candidate):
+                unassigned_members.append(candidate)
+        return unassigned_members
 
-
-    def currentTeamIsComplete(self):
-        if len(self.currentTeam) == int(self.demandedTeamSize):
+    def current_team_is_complete(self):
+        if len(self.current_team) == int(self.demanded_team_size):
             return True
         else:
             return False
