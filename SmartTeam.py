@@ -8,7 +8,7 @@ class SmartTeam:
     def __init__(self, name, team):
         self.debug = True
         self.name = name
-        self.members = team
+        self.members = self.clean_list(team)
         self.breakout_teams = None
         self.breakout_teams_trial = None
         self.visavis = Visavis(self.members)
@@ -16,6 +16,7 @@ class SmartTeam:
         self.breakout_teams_trial = None
         self.current_number_of_trials = 0
         self.max_trials = 10000
+        self.html_result = "<h2>Your breakout teams:</h2>"
 
     # heuristic: hope that after enough trials (with randomized order in list of members) ideal groups are found
     def create_next_breakout_teams(self, demanded_team_size):
@@ -72,8 +73,10 @@ class SmartTeam:
             if not self.breakout_teams_trial.any_team_contains(candidate):
                 if self.is_best_partner(candidate, self.breakout_teams_trial.get_current_team()):
                     return candidate
-        # no good candidate found, so we just return last one
-        return candidate
+        # no good candidate found, so we just return first one that is not already assigned
+        for candidate in self.breakout_teams_trial.overall_members:
+            if not self.breakout_teams_trial.any_team_contains(candidate):
+                return candidate
 
     # 'selten gesehen' heisst: nicht mehr als einmal oefters als die anderen
     def is_best_partner(self, candidate, team):
@@ -82,3 +85,41 @@ class SmartTeam:
             if self.visavis_trial.get_visits(candidate, member) > (minimal_visits + 1):
                 return False
         return True
+
+    def create_sequence_of_breakout_teams(self, demanded_team_sizes):
+        demanded_team_sizes = self.remove_empty_items(demanded_team_sizes)
+        session_number = 0
+        for team_size in demanded_team_sizes:
+            if (int(team_size) > 0) and (int(team_size) < 5):
+                self.create_next_breakout_teams(int(team_size))
+                session_number += 1
+                self.add_teams_to_html_result(session_number)
+
+    def add_teams_to_html_result(self, session_number):
+        self.html_result += "<br><h3>Breakout Session "
+        self.html_result += str(session_number)
+        self.html_result += ": "
+        for team in self.breakout_teams.get_teams():
+            self.html_result += "( "
+            for member in team:
+                self.html_result += member
+                self.html_result += " "
+            self.html_result += ")  "
+        self.html_result += "</h3>"
+
+    def get_formatted_result(self):
+        return self.html_result
+
+    def clean_list(self, my_list):
+        return self.remove_duplicate_items(self.remove_empty_items(my_list))
+
+    def remove_empty_items(self, my_list):
+        clean_list = []
+        for item in my_list:
+            if item is not "":
+                clean_list.append(item)
+        return clean_list
+
+    def remove_duplicate_items(self, my_list):
+        return list(dict.fromkeys(my_list))
+
